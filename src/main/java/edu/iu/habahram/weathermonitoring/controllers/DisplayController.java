@@ -1,9 +1,6 @@
 package edu.iu.habahram.weathermonitoring.controllers;
 
-import edu.iu.habahram.weathermonitoring.model.CurrentConditionDisplay;
-import edu.iu.habahram.weathermonitoring.model.ForecastDisplay;
-import edu.iu.habahram.weathermonitoring.model.Observer;
-import edu.iu.habahram.weathermonitoring.model.StatisticsDisplay;
+import edu.iu.habahram.weathermonitoring.model.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +10,13 @@ import org.springframework.web.bind.annotation.*;
 public class DisplayController {
     private CurrentConditionDisplay currentConditionDisplay;
 
-    public DisplayController(CurrentConditionDisplay currentConditionDisplay
-                             ) {
+    private StatisticsDisplay statisticsDisplay;
+    private HeatIndex heatIndex;
+
+    public DisplayController(CurrentConditionDisplay currentConditionDisplay, StatisticsDisplay statisticsDisplay, HeatIndex heatIndex) {
         this.currentConditionDisplay = currentConditionDisplay;
+        this.statisticsDisplay =  statisticsDisplay;
+        this.heatIndex = heatIndex;
     }
 
     @GetMapping
@@ -25,6 +26,13 @@ public class DisplayController {
         html += "<ul>";
         html += "<li>";
         html += String.format("<a href=/displays/%s>%s</a>", currentConditionDisplay.id(), currentConditionDisplay.name());
+        html += "</li>";
+        html += "<li>";
+        html += String.format("<a href=/displays/%s>%s</a>", statisticsDisplay.id(), statisticsDisplay.name());
+        html += "</li>";
+        html += "<li>";
+        html += String.format("<a href=/displays/%s>%s</a>", heatIndex.id(), heatIndex.name());
+
         html += "</li>";
 
         html += "</ul>";
@@ -42,6 +50,20 @@ public class DisplayController {
             html = currentConditionDisplay.display();
             status = HttpStatus.FOUND;
         }
+
+        else if (id.equalsIgnoreCase(statisticsDisplay.id())) {
+            html = statisticsDisplay.display();
+            status = HttpStatus.FOUND;
+        }
+        else if(id.equalsIgnoreCase(heatIndex.id())){
+            html = heatIndex.display();
+            status = HttpStatus.FOUND;
+        }
+
+        else {
+            html = "The screen id is invalid.";
+            status = HttpStatus.NOT_FOUND;
+        }
         return ResponseEntity
                 .status(status)
                 .body(html);
@@ -55,10 +77,23 @@ public class DisplayController {
             currentConditionDisplay.subscribe();
             html = "Subscribed!";
             status = HttpStatus.FOUND;
-        } else {
+        }
+        else if(id.equalsIgnoreCase(statisticsDisplay.id())){
+            statisticsDisplay.subscribe();
+            html = "Subscribed!";
+            status = HttpStatus.FOUND;
+        }
+        else if(id.equalsIgnoreCase(heatIndex.id())){
+            heatIndex.subscribe();
+            html = "Subscribed!";
+            status = HttpStatus.FOUND;
+        }
+        else {
             html = "The screen id is invalid.";
             status = HttpStatus.NOT_FOUND;
+
         }
+
         return ResponseEntity
                 .status(status)
                 .body(html);
@@ -72,7 +107,18 @@ public class DisplayController {
             currentConditionDisplay.unsubscribe();
             html = "Unsubscribed!";
             status = HttpStatus.FOUND;
-        } else {
+        }
+        else if(id.equalsIgnoreCase(statisticsDisplay.id())){
+            statisticsDisplay.unsubscribe();
+            html = "Unsubscribed!";
+            status = HttpStatus.FOUND;
+        }
+        else if(id.equalsIgnoreCase(heatIndex.id())){
+            heatIndex.unsubscribe();
+            html = "Unsubscribed!";
+            status = HttpStatus.FOUND;
+        }
+        else {
             html = "The screen id is invalid.";
             status = HttpStatus.NOT_FOUND;
         }
